@@ -64,7 +64,11 @@ func ParseDadosPessoaFisicaFromCertificado(cert *x509.Certificate) (p PessoaFisi
 	var san SubjectAlternativeName
 	if strings.Contains(cert.Subject.CommonName, ":") {
 		p.Nome = strings.Split(cert.Subject.CommonName, ":")[0]
-		p.CPF = strings.Split(cert.Subject.CommonName, ":")[1]
+		for _, ou := range cert.Subject.OrganizationalUnit {
+			if strings.Contains(ou, "e-CPF") {
+				p.CPF = strings.Split(cert.Subject.CommonName, ":")[1]
+			}
+		}
 	} else {
 		p.Nome = cert.Subject.CommonName
 	}
@@ -148,4 +152,3 @@ func ParseDadosPessoaFisicaFromCertificado(cert *x509.Certificate) (p PessoaFisi
 
 	return p, nil
 }
-
